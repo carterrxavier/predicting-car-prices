@@ -1,3 +1,4 @@
+
 import numpy as np
 import pandas as pd
 import os
@@ -11,9 +12,9 @@ def split_for_model(df):
     Returns train, validate, and test dfs.
     '''
     train_validate, test = train_test_split(df, test_size=.2, 
-                                        random_state=765)
+                                        random_state=7)
     train, validate = train_test_split(train_validate, test_size=.3, 
-                                   random_state=231)
+                                   random_state=7)
     
     print('train{},validate{},test{}'.format(train.shape, validate.shape, test.shape))
     return train, validate, test
@@ -153,7 +154,7 @@ transform(lambda x : x.fillna(x.mode()))
     cars_df = cars_df.dropna(axis=0, subset=['mileage'])
     cars_df = cars_df.dropna(axis=0, subset=['owner_count'])
     cars_df = cars_df.drop(columns=['power','torque'])
-    cars_df = cars_df.drop(columns=['salvage','seller_rating','theft_title'])
+    cars_df = cars_df.drop(columns=['salvage','seller_rating','theft_title','savings_amount'])
     cars_df = cars_df.drop(columns=['sp_name'])
     cars_df = cars_df.dropna(axis=0, subset=['transmission'])
     cars_df = cars_df.dropna(axis=0, subset=['transmission_display'])
@@ -196,4 +197,20 @@ transform(lambda x : x.fillna(x.mode()))
     
     return cars_df
     
+    
+def encode_cars(cars_df):
+    obj_list  = sorted(cars_df.drop(columns='vin').select_dtypes(include='object').columns.tolist())
+    for obj in obj_list:
+        values = cars_df[obj].value_counts().index.tolist()
+        for count, value in enumerate(values):
+            cars_df.loc[cars_df[obj] == value, obj] = count
+        cars_df[obj] = pd.to_numeric(cars_df[obj], errors='coerce')
+        
+    obj_list  = sorted(cars_df.drop(columns='vin').select_dtypes(include='bool').columns.tolist())
+    for obj in obj_list:
+        cars_df.loc[cars_df[obj] == True, obj] = 1
+        cars_df.loc[cars_df[obj] == False, obj] = 0
+    cars_df[obj] = pd.to_numeric(cars_df[obj], errors='coerce')
+    return cars_df
+
     
