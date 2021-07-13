@@ -135,22 +135,26 @@ def get_chi_test(chi_list, df, alpha, target):
         
 
 def get_model_results(X_train, y_train, X, y, target, model='linear', normalize=False, alpha = 0, power = 0, degree=2 , graph = False):
+    results = pd.DataFrame()
     results = y.copy()
     
     if model == "linear":
         lm = LinearRegression(normalize=normalize)
         lm.fit(X_train, y_train)  
         results['pred'] = lm.predict(X)
+        predictions  = lm.predict(X)
         
     elif model == 'lasso':
         lasso = LassoLars(alpha=alpha)
         lasso.fit(X_train, y_train)
         results['pred'] = lasso.predict(X)
+        predictions  = lasso.predict(X)
         
     elif model == 'glm':
         glm = TweedieRegressor(power=power, alpha=alpha)
         glm.fit(X_train, y_train)
         results['pred'] = glm.predict(X)
+        predictions  = glm.predict(X)
     elif model == 'poly':
         pf = PolynomialFeatures(degree=degree)
         
@@ -161,10 +165,11 @@ def get_model_results(X_train, y_train, X, y, target, model='linear', normalize=
         lm = LinearRegression(normalize=True)
         lm.fit(X_train_degree2, y_train)  
         results['pred'] = lm.predict(X_degree_2)
+        predictions = lm.predict(X_degree_2)
         
-    results = get_risiduals(results, y, results.pred)
-    rmse =    regression_errors(y,results.pred)[2]
-    r_2  =    regression_errors(y,results.pred)[5]
+    results = (get_risiduals(results, y, results['pred']))
+    rmse =    regression_errors(y,results['pred'])[2]
+    r_2  =    regression_errors(y,results['pred'])[5]
 
     print('r2 Score:  {}'.format(r_2))
     print('RMSE Score: {}'.format(rmse)) 
@@ -174,7 +179,7 @@ def get_model_results(X_train, y_train, X, y, target, model='linear', normalize=
     if graph == True:
         plot_residuals(results , results.pred, results.risiduals, results.baseline_risiduals)
     
-    return results, rmse
+    return  predictions, rmse
 
 
 

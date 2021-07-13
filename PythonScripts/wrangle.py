@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 import os
 from sklearn.model_selection import train_test_split
+import datetime
 
 
 def split_for_model(df):
@@ -116,7 +117,7 @@ def clean_car_data(cars_df):
     cars_df['front_legroom'] = split1[0]
     cars_df['back_legroom'] = pd.to_numeric(cars_df['back_legroom'], errors='coerce')       
     cars_df['front_legroom'] = pd.to_numeric(cars_df['front_legroom'], errors='coerce')
-    cars_df['back_legroom'] = cars_df.groupby('body_type').back_legroom.transform(lambda x  : x.fillna(round(x.mean(),1)))
+    cars_df['back_legroom'] = cars_df.groupby('body_type').back_legroom.transform(lambda x  : x.fillna(round(x.mode(),1)))
     cars_df['front_legroom'] = cars_df.groupby('body_type').front_legroom.transform(lambda x : x.fillna(round(x.mean(),1)))
     cars_df['city_fuel_economy'] = cars_df.groupby(['year','make_name','model_name']).city_fuel_economy.transform(lambda x : x.fillna(round(x.mean(),1)))
     cars_df = cars_df.dropna(axis=0, subset=['city_fuel_economy'])
@@ -184,8 +185,7 @@ transform(lambda x : x.fillna(x.mode()))
     cars_df = cars_df.drop(columns=['listing_id'])
     split6 = cars_df['trimId'].str.split('t', n =1, expand = True)
     cars_df['trimId'] = split6[1]
-    cars_df['trimId'] = pd.to_numeric(cars_df['trimId'], errors='coerce')
-    cars_df = cars_df.drop(columns='trim_name')
+    cars_df['trimId'] = pd.to_numeric(cars_df['trimId'], errors='coerce') 
     cars_df = cars_df.drop(columns='wheel_system_display')
     cars_df = cars_df.drop(columns='transmission')
     split7 = cars_df['maximum_seating'].str.split(' ', n =1, expand = True)
@@ -195,6 +195,8 @@ transform(lambda x : x.fillna(x.mode()))
     #engine_cylinders and engine_type are the same column, drop #engine_cylinders
     cars_df = cars_df.drop(columns='engine_cylinders')
     
+    cars_df['age_of_car'] = datetime.date.today().year - cars_df['year']
+    
     return cars_df
     
     
@@ -203,8 +205,8 @@ def encode_cars(cars_df):
     for obj in obj_list:
         values = cars_df[obj].value_counts().index.tolist()
         for count, value in enumerate(values):
-            cars_df.loc[cars_df[obj] == value, obj] = count
-        cars_df[obj] = pd.to_numeric(cars_df[obj], errors='coerce')
+            cars_df.loc[cars_df[obj] == value, obj + '_num'] = count
+        cars_df[obj+ '_num'] = pd.to_numeric(cars_df[obj+ '_num'], errors='coerce')
         
     obj_list  = sorted(cars_df.drop(columns='vin').select_dtypes(include='bool').columns.tolist())
     for obj in obj_list:
