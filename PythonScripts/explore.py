@@ -23,19 +23,16 @@ def graph_to_target(df, target):
             plt.figure(figsize=(14,10))
             sns.scatterplot(data = df, x= i, y= target)
             plt.show()
-            
-    
-
-
     
 def get_heatmap(df, target):
     '''
     This method will return a heatmap of all variables and there relation to churn
     '''
     plt.figure(figsize=(15,12))
-    heatmap = sns.heatmap(df.corr()[[target]].sort_values(by=target, ascending=False), annot=True)
-    heatmap.set_title('Feautures  Correlating with {}'.format(target))
-    
+    color = sns.diverging_palette(250, 30, l=65, center="dark", as_cmap=True)
+    heatmap = sns.heatmap(df.corr()[[target]].sort_values(by=target, ascending=False), annot=True, cmap=color)
+    heatmap.set_title('Feautures Correlating to {}'.format(target))
+    plt.show()
     return heatmap
 
 
