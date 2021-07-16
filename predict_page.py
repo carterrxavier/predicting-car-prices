@@ -1,21 +1,11 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
 from math import isnan
-=======
->>>>>>> 1ded3024cfced68134c28c87f2ba9cce0bd9533a
-=======
->>>>>>> 1ded3024cfced68134c28c87f2ba9cce0bd9533a
 import streamlit as st
 import pickle
 import numpy as np
 import pandas as pd
-<<<<<<< HEAD
-<<<<<<< HEAD
 from sklearn.preprocessing import RobustScaler
-=======
->>>>>>> 1ded3024cfced68134c28c87f2ba9cce0bd9533a
-=======
->>>>>>> 1ded3024cfced68134c28c87f2ba9cce0bd9533a
+from sklearn.preprocessing import PolynomialFeatures
+
 
 def load_model():
     with open('car_model.pkl', 'rb') as file:
@@ -24,33 +14,10 @@ def load_model():
 
 data = load_model()
 df = pd.DataFrame(data['df'])
-<<<<<<< HEAD
-<<<<<<< HEAD
-edf = pd.DataFrame(data['edf'])
-tdf = pd.DataFrame(data['tdf'])
-=======
->>>>>>> 1ded3024cfced68134c28c87f2ba9cce0bd9533a
-=======
->>>>>>> 1ded3024cfced68134c28c87f2ba9cce0bd9533a
 regressor_model = data['model']
-regressor_Xtrain = data['poly']
-regressor_ytrain = data['ytrain']
-year = data['year']
-car_make = data['car_make']
-car_model = data['car_model']
-mileage = data['mileage']
-trimId = data['trimId']
-horsepower = data['horsepower']
-engine_displacement = data['engine_displacement']
+regressor_Xtrain = data['X_train']
+regressor_ytrain = data['y_train']
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-
-=======
->>>>>>> 1ded3024cfced68134c28c87f2ba9cce0bd9533a
-=======
->>>>>>> 1ded3024cfced68134c28c87f2ba9cce0bd9533a
 def show_predict_page():
     st.title("Car Predictions")
     st.write('''### Enter Vehicle information here''')
@@ -58,11 +25,13 @@ def show_predict_page():
     make = st.selectbox('make',sorted(df[df['year']== year]['make_name'].value_counts().index.tolist()))
     model = st.selectbox('model', sorted (df[(df['make_name'] == make) & (df['year'] == year)]['model_name'].value_counts().index.tolist()))
     trim = st.selectbox('trim', sorted(df[(df['model_name'] == model) & (df['make_name'] == make) & (df['year'] == year)]['trim_name'].value_counts().index.tolist()))
-<<<<<<< HEAD
-<<<<<<< HEAD
     mileage = st.number_input(label='mileage' , step=1)
-    horsepower = df[(df['model_name'] == model) & (df['make_name'] == make) & (df['year'] == year)].horsepower.mean()
-    engine_displacement = df[(df['model_name'] == model) & (df['make_name'] == make) & (df['year'] == year)].engine_displacement.mean()
+    horsepower = df[(df['trim_name']==trim)].horsepower.max()
+    engine_displacement = df[(df['trim_name']==trim)].engine_displacement.max()
+    highway = df[(df['trim_name']==trim)].highway_fuel_economy.max()
+    city = df[df['trim_name']==trim].city_fuel_economy.max()
+    fuel_tank_volume = df[df['trim_name']==trim].fuel_tank_volume.max()
+    wheelbase = df[df['trim_name']==trim].wheelbase.max()
 
     calculate = st.button('Calculate')
 
@@ -73,46 +42,42 @@ def show_predict_page():
             return True
 
     def run_model():
-        to_scale = ['mileage', 'horsepower', 'engine_displacement']
-        scal = [[mileage, horsepower, engine_displacement]]
+        to_scale = ['mileage', 'horsepower', 'engine_displacement', 'highway_fuel_economy','city_fuel_economy','fuel_tank_volume','wheelbase']
+        scal = [[mileage, horsepower, engine_displacement,highway,city, fuel_tank_volume, wheelbase]]
         robust_scaler = RobustScaler()
-        robust_scaler.fit(edf[to_scale])
+        robust_scaler.fit(df[to_scale])
         sc = robust_scaler.transform(scal)
+
 
         mileage_s = sc[0][0]
         horsepower_s = sc[0][1]
         engine_displacement_s = sc[0][2]
+        highway_s = sc[0][3]
+        city_s = sc[0][4]
+        fuel_tank_volume_s =sc[0][5]
+        wheelbase_s = sc[0][6]
 
 
-        st.write(edf[edf['make_name'] == make]['make_name_num'].head(1).make_name_)
-        model_num = 0
+        make_num = df[df['make_name'] == make]['make_name_num'].mean()
+        model_num = df[df['model_name'] == model]['model_name_num'].mean()
+        trim_num = df[df['trim_name'] == trim]['trimId'].mean()
 
+        X = [[make_num, model_num, trim_num, year, mileage_s, horsepower_s,fuel_tank_volume_s,engine_displacement_s,city_s,highway_s,wheelbase_s]]
 
-        regressor_model.fit(regressor_Xtrain, regressor_ytrain)
-        result = regressor_model.predict()
+        pf = PolynomialFeatures(degree=3)
+         
+        X_train_degree = pf.fit_transform(regressor_Xtrain)
+        X_degree = pf.transform(X)
 
-        return 0
+        regressor_model.fit(X_train_degree ,regressor_ytrain)
+        result = regressor_model.predict(X_degree)
+
+        return np.round(result[0],2)
 
     if calculate:
         if check_for_input() == False:
             st.write('''### Please enter all the above information''')
         else:
            estimated_price = run_model()
-
-
-         
-
-           
-  
-
-
-        
-
-    
-
-=======
->>>>>>> 1ded3024cfced68134c28c87f2ba9cce0bd9533a
-=======
->>>>>>> 1ded3024cfced68134c28c87f2ba9cce0bd9533a
-    
+           st.write('''### $ {:,.2f}'''.format(estimated_price))
 

@@ -109,6 +109,8 @@ def get_car_data(sample= None):
 def clean_car_data(cars_df):
     cars_df = drop_null_columns(cars_df , 90)
     cars_df = drop_null_rows(cars_df, 40)
+    cars_df = cars_df.dropna(axis=0, subset=['trimId'])
+    cars_df = cars_df.dropna(axis=0, subset=['trim_name'])
     cars_df = cars_df.drop(columns=['bed_height', 'bed_length'])
     cars_df = cars_df.dropna(axis=0, subset=['body_type'])
     split = cars_df['back_legroom'].str.split(' ', n =1, expand = True)
@@ -119,25 +121,25 @@ def clean_car_data(cars_df):
     cars_df['front_legroom'] = pd.to_numeric(cars_df['front_legroom'], errors='coerce')
     cars_df['back_legroom'] = cars_df.groupby('body_type').back_legroom.transform(lambda x  : x.fillna(round(x.mode(),1)))
     cars_df['front_legroom'] = cars_df.groupby('body_type').front_legroom.transform(lambda x : x.fillna(round(x.mean(),1)))
-    cars_df['city_fuel_economy'] = cars_df.groupby(['year','make_name','model_name']).city_fuel_economy.transform(lambda x : x.fillna(round(x.mean(),1)))
+    cars_df['city_fuel_economy'] = cars_df.groupby(['trimId']).city_fuel_economy.transform(lambda x : x.fillna(round(x.mean(),1)))
     cars_df = cars_df.dropna(axis=0, subset=['city_fuel_economy'])
-    cars_df['highway_fuel_economy']= cars_df.groupby(['year','make_name','model_name']).highway_fuel_economy.transform(lambda x : x.fillna(round(x.mean(),1)))
+    cars_df['highway_fuel_economy']= cars_df.groupby(['trimId']).highway_fuel_economy.transform(lambda x : x.fillna(round(x.mean(),1)))
     cars_df = cars_df.dropna(axis=0, subset=['highway_fuel_economy'])
     cars_df = cars_df.drop(columns='description')
-    cars_df['engine_cylinders'] = cars_df.groupby(['year','make_name','model_name']).engine_cylinders.\
+    cars_df['engine_cylinders'] = cars_df.groupby(['trimId']).engine_cylinders.\
 transform(lambda x : x.fillna(x.mode()))
     cars_df = cars_df.dropna(axis=0, subset=['engine_cylinders'])
-    cars_df['engine_displacement'] = cars_df.groupby(['year','make_name','model_name']).engine_displacement.\
+    cars_df['engine_displacement'] = cars_df.groupby(['trimId']).engine_displacement.\
 transform(lambda x : x.fillna(x.mode()))
     cars_df = cars_df.dropna(axis=0, subset=['engine_displacement'])
-    cars_df['engine_type'] = cars_df.groupby(['year','make_name','model_name']).engine_type.\
+    cars_df['engine_type'] = cars_df.groupby(['trimId']).engine_type.\
 transform(lambda x : x.fillna(x.mode()))
     cars_df = cars_df.dropna(axis=0, subset=['engine_type'])
     cars_df.fleet = cars_df.fleet.fillna('unknown')
     cars_df.fleet = cars_df.fleet.astype(str)
     cars_df.frame_damaged = cars_df.frame_damaged.fillna(False)
     cars_df = cars_df.drop(columns='franchise_make')
-    cars_df['fuel_type'] = cars_df.groupby(['year','make_name','model_name']).fuel_type.transform(lambda x : x.fillna(x.mode()))
+    cars_df['fuel_type'] = cars_df.groupby(['trimId']).fuel_type.transform(lambda x : x.fillna(x.mode()))
     cars_df = cars_df.dropna(axis=0, subset=['fuel_type'])
     split2 = cars_df['fuel_tank_volume'].str.split(' ', n =1, expand = True)
     cars_df['fuel_tank_volume'] = split2[0]
@@ -149,7 +151,7 @@ transform(lambda x : x.fillna(x.mode()))
     cars_df['height'] = split3[0]
     cars_df['height'] = pd.to_numeric(cars_df['height'], errors='coerce')
     cars_df = cars_df.dropna(axis=0, subset=['height'])
-    cars_df.height = cars_df.groupby(['year','make_name','model_name']).height.\
+    cars_df.height = cars_df.groupby(['trimId']).height.\
     transform(lambda x : x.fillna(x.mean()))
     cars_df = cars_df.drop(columns=['isCab','main_picture_url','major_options'])
     cars_df = cars_df.dropna(axis=0, subset=['mileage'])

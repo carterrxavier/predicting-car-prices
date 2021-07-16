@@ -7,7 +7,7 @@ import itertools
 
 def get_distribution(df):
     for i in df.columns:
-        plt.figure(figsize=(14,10))
+        plt.figure(figsize=(7,5))
         sns.histplot(data = df, x=i)
     plt.show()
     
@@ -16,11 +16,11 @@ def get_distribution(df):
 def graph_to_target(df, target):
     for i in df: 
         if(df[i].dtypes != 'object'):
-            plt.figure(figsize=(14,10))
+            plt.figure(figsize=(7,5))
             sns.regplot(data=df, x=i, y = target,line_kws={"color":"black"},scatter_kws={"color":'pink','alpha':0.5})
             plt.show()
         else:
-            plt.figure(figsize=(14,10))
+            plt.figure(figsize=(7,5))
             sns.scatterplot(data = df, x= i, y= target)
             plt.show()
     
@@ -59,4 +59,4 @@ def plot_cat_and_cont(cat_var, con_var, df):
             sns.barplot(x=i, y=j, data=df)
             plt.show()
         
-        
+
