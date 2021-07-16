@@ -1,4 +1,5 @@
 from math import isnan
+from pandas.core.frame import DataFrame
 import streamlit as st
 import pickle
 import numpy as np
@@ -12,11 +13,33 @@ def load_model():
         data = pickle.load(file)
     return data
 
+def load_data():
+    with open('car_d.pkl', 'rb') as file:
+        data = pickle.load(file)
+    return data
+
+def load_x():
+    with open('car_x.pkl', 'rb') as file:
+        data = pickle.load(file)
+    return data
+
+def load_y():
+    with open('car_y.pkl', 'rb') as file:
+        data = pickle.load(file)
+    return data
+
+
+
+
+
 data = load_model()
-df = pd.DataFrame(data['df'])
+dataf = load_data()
+datax = load_x()
+datay = load_y()
+df = pd.DataFrame(dataf['df'])
 regressor_model = data['model']
-regressor_Xtrain = data['X_train']
-regressor_ytrain = data['y_train']
+regressor_Xtrain = datax['X_train']
+regressor_ytrain = datay['y_train']
 
 def show_predict_page():
     st.title("Car Predictions")
