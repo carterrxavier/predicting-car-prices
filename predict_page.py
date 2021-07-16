@@ -1,5 +1,8 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 from math import isnan
+=======
+>>>>>>> 1ded3024cfced68134c28c87f2ba9cce0bd9533a
 =======
 >>>>>>> 1ded3024cfced68134c28c87f2ba9cce0bd9533a
 import streamlit as st
@@ -7,7 +10,10 @@ import pickle
 import numpy as np
 import pandas as pd
 <<<<<<< HEAD
+<<<<<<< HEAD
 from sklearn.preprocessing import RobustScaler
+=======
+>>>>>>> 1ded3024cfced68134c28c87f2ba9cce0bd9533a
 =======
 >>>>>>> 1ded3024cfced68134c28c87f2ba9cce0bd9533a
 
@@ -19,8 +25,11 @@ def load_model():
 data = load_model()
 df = pd.DataFrame(data['df'])
 <<<<<<< HEAD
+<<<<<<< HEAD
 edf = pd.DataFrame(data['edf'])
 tdf = pd.DataFrame(data['tdf'])
+=======
+>>>>>>> 1ded3024cfced68134c28c87f2ba9cce0bd9533a
 =======
 >>>>>>> 1ded3024cfced68134c28c87f2ba9cce0bd9533a
 regressor_model = data['model']
@@ -35,8 +44,11 @@ horsepower = data['horsepower']
 engine_displacement = data['engine_displacement']
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> 1ded3024cfced68134c28c87f2ba9cce0bd9533a
 =======
 >>>>>>> 1ded3024cfced68134c28c87f2ba9cce0bd9533a
 def show_predict_page():
@@ -46,6 +58,7 @@ def show_predict_page():
     make = st.selectbox('make',sorted(df[df['year']== year]['make_name'].value_counts().index.tolist()))
     model = st.selectbox('model', sorted (df[(df['make_name'] == make) & (df['year'] == year)]['model_name'].value_counts().index.tolist()))
     trim = st.selectbox('trim', sorted(df[(df['model_name'] == model) & (df['make_name'] == make) & (df['year'] == year)]['trim_name'].value_counts().index.tolist()))
+<<<<<<< HEAD
 <<<<<<< HEAD
     mileage = st.number_input(label='mileage' , step=1)
     horsepower = df[(df['model_name'] == model) & (df['make_name'] == make) & (df['year'] == year)].horsepower.mean()
@@ -97,6 +110,8 @@ def show_predict_page():
 
     
 
+=======
+>>>>>>> 1ded3024cfced68134c28c87f2ba9cce0bd9533a
 =======
 >>>>>>> 1ded3024cfced68134c28c87f2ba9cce0bd9533a
     
