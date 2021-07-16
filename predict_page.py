@@ -26,12 +26,10 @@ def show_predict_page():
     model = st.selectbox('model', sorted (df[(df['make_name'] == make) & (df['year'] == year)]['model_name'].value_counts().index.tolist()))
     trim = st.selectbox('trim', sorted(df[(df['model_name'] == model) & (df['make_name'] == make) & (df['year'] == year)]['trim_name'].value_counts().index.tolist()))
     mileage = st.number_input(label='mileage' , step=1)
-    horsepower = df[(df['trim_name']==trim)].horsepower.max()
-    engine_displacement = df[(df['trim_name']==trim)].engine_displacement.max()
-    highway = df[(df['trim_name']==trim)].highway_fuel_economy.max()
-    city = df[df['trim_name']==trim].city_fuel_economy.max()
-    fuel_tank_volume = df[df['trim_name']==trim].fuel_tank_volume.max()
-    wheelbase = df[df['trim_name']==trim].wheelbase.max()
+    horsepower = df[(df['trim_name']==trim)].horsepower.mean()
+    engine_displacement = df[(df['trim_name']==trim)].engine_displacement.mean()
+    fuel_tank_volume = df[df['trim_name']==trim].fuel_tank_volume.mode()
+    wheelbase = df[df['trim_name']==trim].wheelbase.mean()
 
     calculate = st.button('Calculate')
 
@@ -42,8 +40,8 @@ def show_predict_page():
             return True
 
     def run_model():
-        to_scale = ['mileage', 'horsepower', 'engine_displacement', 'highway_fuel_economy','city_fuel_economy','fuel_tank_volume','wheelbase']
-        scal = [[mileage, horsepower, engine_displacement,highway,city, fuel_tank_volume, wheelbase]]
+        to_scale = ['mileage', 'horsepower', 'engine_displacement','fuel_tank_volume','wheelbase']
+        scal = [[mileage, horsepower, engine_displacement,fuel_tank_volume, wheelbase]]
         robust_scaler = RobustScaler()
         robust_scaler.fit(df[to_scale])
         sc = robust_scaler.transform(scal)
@@ -52,17 +50,15 @@ def show_predict_page():
         mileage_s = sc[0][0]
         horsepower_s = sc[0][1]
         engine_displacement_s = sc[0][2]
-        highway_s = sc[0][3]
-        city_s = sc[0][4]
-        fuel_tank_volume_s =sc[0][5]
-        wheelbase_s = sc[0][6]
+        fuel_tank_volume_s =sc[0][3]
+        wheelbase_s = sc[0][4]
 
 
         make_num = df[df['make_name'] == make]['make_name_num'].mean()
         model_num = df[df['model_name'] == model]['model_name_num'].mean()
         trim_num = df[df['trim_name'] == trim]['trimId'].mean()
 
-        X = [[make_num, model_num, trim_num, year, mileage_s, horsepower_s,fuel_tank_volume_s,engine_displacement_s,city_s,highway_s,wheelbase_s]]
+        X = [[make_num, model_num, trim_num, year, mileage_s, horsepower_s,fuel_tank_volume_s,engine_displacement_s,wheelbase_s]]
 
         pf = PolynomialFeatures(degree=3)
          
@@ -72,12 +68,11 @@ def show_predict_page():
         regressor_model.fit(X_train_degree ,regressor_ytrain)
         result = regressor_model.predict(X_degree)
 
-        return np.round(result[0],2)
+        return round(result[0],2)
 
     if calculate:
         if check_for_input() == False:
             st.write('''### Please enter all the above information''')
         else:
            estimated_price = run_model()
-           st.write('''### $ {:,.2f}'''.format(estimated_price))
-
+           st.write(''' ### ${}'''.format(estimated_price))
