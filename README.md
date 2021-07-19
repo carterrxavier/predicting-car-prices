@@ -1,5 +1,9 @@
+# See model in application
+## [Predicting car prices](https://share.streamlit.io/carterrxavier/predicting-car-prices/main/app.py) 
+
+
 # Car Price Prediction
-## This project is an attempt to gain insight on the price prediction for used cars. This repository is an attempt to gain insight on the price prediction for used cars. This model will help shape a price prediction using a regression machine learning model to help aid future car buys when buying a car.
+## This project is an attempt to gain insight on the price prediction for used cars. This model will help shape a price prediction using a regression machine learning model to help aid future car buys when buying a car.
 
 # To-Do List
  - Create README on github that allows for project understanding
